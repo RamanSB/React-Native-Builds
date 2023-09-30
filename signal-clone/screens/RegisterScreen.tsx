@@ -1,9 +1,17 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Button, Input, Text } from "@rneui/base";
 import { StatusBar } from "expo-status-bar";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import {
+  User,
+  UserCredential,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import React, { useLayoutEffect, useState } from "react";
 import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import { auth } from "../firebase";
 import { RootStackParamList } from "../types/types";
+import { DEFAULT_AVATAR_IMAGE_URL } from "../components/CustomListItem";
 
 type RegisterScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Register">;
@@ -28,7 +36,20 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     });
   }, [navigation]);
 
-  const register = () => {};
+  const register = async () => {
+    try {
+      const userCredentials: UserCredential =
+        await createUserWithEmailAndPassword(auth, email, password);
+      const user: User = userCredentials.user;
+
+      await updateProfile(user, {
+        displayName: fullName,
+        photoURL: imageURL || DEFAULT_AVATAR_IMAGE_URL,
+      });
+    } catch (ex) {
+      console.log(`Error while registering user: ${email}... ${ex}`);
+    }
+  };
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.container}>

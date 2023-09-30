@@ -1,10 +1,16 @@
 import { KeyboardAvoidingView, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/types";
 import { StatusBar } from "expo-status-bar";
 import { Button, Image, Input } from "@rneui/base";
 import signalLogo from "../assets/signal-logo.png";
+import { auth } from "../firebase";
+import {
+  User,
+  UserCredential,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
@@ -13,6 +19,36 @@ type LoginScreenProps = {
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  console.log(`[LoginScreen] Navigation Parent: ${navigation.getParent()}`);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser: User | null) => {
+      if (authUser) {
+        navigation.replace("Home");
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const signIn = async () => {
+    try {
+      const userCredentials: UserCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      if (userCredentials.user) {
+        navigation.replace("Home");
+      } else {
+        alert("Invalid Email or Password.");
+      }
+    } catch (error) {
+      console.log(`Error while logging in user (${email}): ${error}`);
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -37,10 +73,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           onChangeText={(text: string) => setPassword(text)}
         />
       </View>
-      <Button
-        title="Login"
-        containerStyle={styles.button} /* onPress={signIn} */
-      />
+      <Button title="Login" containerStyle={styles.button} onPress={signIn} />
       <Button
         title="Register"
         containerStyle={styles.button}
@@ -59,8 +92,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    borderColor: "red",
-    borderWidth: 2,
     padding: 24,
     backgroundColor: "white",
   },

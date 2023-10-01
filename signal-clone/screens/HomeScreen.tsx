@@ -8,8 +8,19 @@ import {
   View,
 } from "react-native";
 import { RootStackParamList } from "../types/types";
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { auth } from "../firebase";
+import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
+import {
+  CollectionReference,
+  DocumentReference,
+  QuerySnapshot,
+  collection,
+  getDoc,
+  getDocs,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../firebase";
 import CustomListItem from "../components/CustomListItem";
 
 type HomeScreenProps = {
@@ -17,6 +28,8 @@ type HomeScreenProps = {
 };
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const [chats, setChats] = useState<any[]>([]);
+  console.log(`Chat: ${JSON.stringify(chats)}`);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Signal",
@@ -43,19 +56,55 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </View>
       ),
       headerRight: () => (
-        // TODO: Add Icons
-        <View>
-          <TouchableOpacity></TouchableOpacity>
-          <TouchableOpacity></TouchableOpacity>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: 80,
+            marginRight: 20,
+          }}
+        >
+          <TouchableOpacity activeOpacity={0.5}>
+            <AntDesign name="camerao" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => {
+              navigation.push("AddChat");
+            }}
+          >
+            <SimpleLineIcons name="plus" size={24} color="black" />
+          </TouchableOpacity>
         </View>
       ),
     });
   }, []);
 
+  useEffect(() => {
+    const chatsCollectionRef: CollectionReference = collection(db, "Chats");
+    const unsubscribe = onSnapshot(chatsCollectionRef, (snapshot) => {
+      try {
+        const chatList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setChats(chatList);
+      } catch (error) {
+        console.log(`Error processing chat snapshot... ${error}`);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <CustomListItem />
+        {chats.map((chat) => (
+          <CustomListItem key={chat.iid} chatName={chat.chatName} />
+        ))}
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/types";
 import { StatusBar } from "expo-status-bar";
@@ -20,15 +20,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackVisible: false,
+    });
+  }, [navigation]);
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser: User | null) => {
       if (authUser) {
-        navigation.replace("Home");
+        navigation.navigate("Home");
       }
     });
 
     return unsubscribe;
-  }, []);
+  }, [navigation]);
 
   const signIn = async () => {
     try {
@@ -39,7 +45,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       );
 
       if (userCredentials.user) {
-        navigation.replace("Home");
+        navigation.push("Home");
       } else {
         alert("Invalid Email or Password.");
       }

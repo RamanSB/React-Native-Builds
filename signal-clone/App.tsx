@@ -7,6 +7,7 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 
 import ChatScreen from "./screens/ChatScreen";
+import EditProfileScreen from "./screens/EditProfileScreen";
 
 /* (function () {
   console.log(`Initialising Env Config...`);
@@ -30,6 +31,10 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+        ></Stack.Screen>
         <Stack.Screen name="AddChat" component={AddChatScreen} />
         <Stack.Screen
           name="Chat"

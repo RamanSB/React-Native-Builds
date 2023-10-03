@@ -30,6 +30,7 @@ import { RootStackParamList } from "../types/types";
 import { User } from "firebase/auth";
 
 type ChatScreenProps = NativeStackScreenProps<RootStackParamList, "Chat">;
+
 export type Message = {
   message: string;
   photoURL: string;

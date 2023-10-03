@@ -40,17 +40,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       headerLeft: () => (
         <View>
           <TouchableOpacity
+            activeOpacity={0.5}
             onPress={async () => {
               await auth.signOut();
               navigation.replace("Login");
             }}
           >
-            <Avatar
-              source={{
-                uri: auth.currentUser?.photoURL || DEFAULT_AVATAR_IMAGE_URL,
-              }}
-              rounded
-            ></Avatar>
+            <AntDesign name="logout" size={24} color="black" />
           </TouchableOpacity>
         </View>
       ),
@@ -64,8 +60,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             marginRight: 20,
           }}
         >
-          <TouchableOpacity activeOpacity={0.5}>
-            <AntDesign name="camerao" size={24} color="black" />
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => navigation.navigate("EditProfile")}
+          >
+            <Avatar
+              source={{
+                uri: auth.currentUser?.photoURL || DEFAULT_AVATAR_IMAGE_URL,
+              }}
+              rounded
+            ></Avatar>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.5}

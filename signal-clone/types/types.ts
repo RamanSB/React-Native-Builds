@@ -11,4 +11,5 @@ export type RootStackParamList = {
   Home: undefined;
   AddChat: undefined;
   Chat: { id: string; chatName: string };
+  EditProfile: undefined;
 };

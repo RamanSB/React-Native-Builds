@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { Message } from "../screens/ChatScreen";
 
 export const DEFAULT_AVATAR_IMAGE_URL: string =
-  "https://www.gravatar.com/avatar/3b3be63a4c2a439b013787725dfce802?d=identicon";
+  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 const CustomListItem = ({
   id,

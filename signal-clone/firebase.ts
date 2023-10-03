@@ -2,14 +2,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore, Firestore } from "firebase/firestore";
 import { initializeAuth, Auth } from "firebase/auth";
+// import { FIREBASE_API_KEY } from "@env";
 
 // Had to be done, although this is not a modular approach, I needed this to get access to
 // getReactNativePersistence.
 import * as firebaseAuth from "firebase/auth";
 const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence;
 
-//TODO: Incorporate Doppler to hide the API Key.
 const firebaseConfig = {
+  apiKey: "AIzaSyCz06YNAryp-YExTYDRpGePAbBvhElPYNc",
   authDomain: "signal-clone-66365.firebaseapp.com",
   projectId: "signal-clone-66365",
   storageBucket: "signal-clone-66365.appspot.com",

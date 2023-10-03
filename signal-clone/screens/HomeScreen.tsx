@@ -1,5 +1,12 @@
+import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Avatar, Icon, Text } from "@rneui/base";
+import { Avatar, Divider } from "@rneui/base";
+import {
+  CollectionReference,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
+import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -7,21 +14,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import CustomListItem, {
+  DEFAULT_AVATAR_IMAGE_URL,
+} from "../components/CustomListItem";
+import { auth, db } from "../firebase";
 import { RootStackParamList } from "../types/types";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { auth } from "../firebase";
-import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
-import {
-  CollectionReference,
-  DocumentReference,
-  QuerySnapshot,
-  collection,
-  getDoc,
-  getDocs,
-  onSnapshot,
-} from "firebase/firestore";
-import { db } from "../firebase";
-import CustomListItem from "../components/CustomListItem";
 
 type HomeScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -29,7 +26,7 @@ type HomeScreenProps = {
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [chats, setChats] = useState<any[]>([]);
-  console.log(`Chat: ${JSON.stringify(chats)}`);
+  // console.log(`[HomeScreen] - Chats: ${JSON.stringify(chats)}`);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Signal",
@@ -49,7 +46,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             }}
           >
             <Avatar
-              source={{ uri: auth.currentUser?.photoURL || undefined }}
+              source={{
+                uri: auth.currentUser?.photoURL || DEFAULT_AVATAR_IMAGE_URL,
+              }}
               rounded
             ></Avatar>
           </TouchableOpacity>
@@ -71,7 +70,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
-              navigation.push("AddChat");
+              navigation.navigate("AddChat");
             }}
           >
             <SimpleLineIcons name="plus" size={24} color="black" />
@@ -99,12 +98,27 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
+  const enterChat = (id: string, chatName: string) => {
+    navigation.navigate("Chat", { id, chatName });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      <Divider width={1} />
       <ScrollView>
-        {chats.map((chat) => (
-          <CustomListItem key={chat.iid} chatName={chat.chatName} />
-        ))}
+        {chats.map((chat) => {
+          return (
+            <Fragment key={chat.id}>
+              <CustomListItem
+                id={chat.id}
+                key={chat.id}
+                chatName={chat.chatName}
+                enterChat={enterChat}
+              />
+              <Divider width={1} />
+            </Fragment>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );

@@ -10,4 +10,5 @@ export type RootStackParamList = {
   Register: undefined;
   Home: undefined;
   AddChat: undefined;
+  Chat: { id: string; chatName: string };
 };

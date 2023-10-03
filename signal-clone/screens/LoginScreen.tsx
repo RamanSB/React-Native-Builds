@@ -45,6 +45,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       }
     } catch (error) {
       console.log(`Error while logging in user (${email}): ${error}`);
+      alert("Invalid Email or Password.");
     }
   };
 
@@ -69,6 +70,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           secureTextEntry
           value={password}
           onChangeText={(text: string) => setPassword(text)}
+          onSubmitEditing={signIn}
         />
       </View>
       <Button title="Login" containerStyle={styles.button} onPress={signIn} />

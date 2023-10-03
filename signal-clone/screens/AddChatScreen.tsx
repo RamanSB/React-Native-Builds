@@ -10,6 +10,7 @@ import {
   DocumentReference,
   addDoc,
   collection,
+  documentId,
 } from "firebase/firestore";
 
 type AddChatScreenProps = {
@@ -31,6 +32,7 @@ const AddChatScreen: React.FC<AddChatScreenProps> = ({ navigation }) => {
       console.log(`createChat()`);
       const docRef: DocumentReference = await addDoc(collection(db, "Chats"), {
         chatName: input,
+        messages: [],
       });
       console.log(`Successfully created chat: ${input}`);
 
@@ -59,8 +61,7 @@ export default AddChatScreen;
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 2,
-    borderColor: "red",
     padding: 30,
+    height: "100%",
   },
 });

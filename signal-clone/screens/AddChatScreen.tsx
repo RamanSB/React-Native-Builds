@@ -4,13 +4,18 @@ import { Button, Input } from "@rneui/base";
 import { useLayoutEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { RootStackParamList } from "../types/types";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import {
   CollectionReference,
   DocumentReference,
   addDoc,
   collection,
-  documentId,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 
 type AddChatScreenProps = {
@@ -34,6 +39,33 @@ const AddChatScreen: React.FC<AddChatScreenProps> = ({ navigation }) => {
         chatName: input,
         messages: [],
       });
+
+      const q = query(
+        collection(db, "Users"),
+        where("id", "==", auth.currentUser?.uid as string)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Handle the data
+        const documentSnapshot = querySnapshot.docs[0];
+        console.log(
+          "User ID:",
+          documentSnapshot.id,
+          "User data:",
+          documentSnapshot.data()
+        );
+
+        await updateDoc(documentSnapshot.ref, "chats", {
+          visible: true,
+          chatName: input,
+          id: docRef.id,
+        });
+      } else {
+        console.log("No such user!");
+      }
+
       console.log(`Successfully created chat: ${input}`);
 
       navigation.canGoBack()

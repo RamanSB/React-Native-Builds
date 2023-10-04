@@ -7,9 +7,12 @@ import {
   onSnapshot,
   DocumentSnapshot,
 } from "firebase/firestore";
-import { db } from "../firebase";
-import { useEffect, useState } from "react";
+import { auth, db } from "../firebase";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { Message } from "../screens/ChatScreen";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Text } from "@rneui/base";
+import { RectButton, Swipeable } from "react-native-gesture-handler";
 
 export const DEFAULT_AVATAR_IMAGE_URL: string =
   "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
@@ -27,12 +30,17 @@ const CustomListItem = ({
 
   useEffect(() => {
     const docRef: DocumentReference = doc(db, "Chats", id);
+    console.log(`ID: ${id}`);
     const unsubscribe = onSnapshot(docRef, (doc: DocumentSnapshot) => {
-      const messages: Message[] = doc.data()?.messages;
       console.log(
-        `[CustomListItem] useEffect: ${messages[messages.length - 1].message}`
+        `[CustomList - useEffect] DocData: ${JSON.stringify(doc.data())}`
       );
-      const mostRecentMsg = messages[messages.length - 1];
+      const messages: Message[] = doc.data()?.messages;
+      console.log(`Messages: ${messages}`);
+
+      const mostRecentMsg =
+        messages.length !== 0 ? messages[messages.length - 1] : null;
+      console.log(`MostRecentMsg: ${mostRecentMsg}`);
       setLastMessage(mostRecentMsg);
     });
 
@@ -47,7 +55,9 @@ const CustomListItem = ({
     >
       <Avatar
         rounded
-        source={{ uri: lastMessage?.photoURL || DEFAULT_AVATAR_IMAGE_URL }}
+        source={{
+          uri: lastMessage?.photoURL || (auth.currentUser?.photoURL as string),
+        }}
       />
 
       <ListItem.Content>
@@ -74,4 +84,40 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomListItem;
+const SwipeableCustomListItem: React.FC<{
+  id: string;
+  chatName: string;
+  enterChat: (id: string, chatName: string) => void;
+  hideChat: (id: string, chatName: string) => void;
+}> = ({ hideChat, enterChat, chatName, id }) => (
+  <Swipeable
+    renderRightActions={(progress, dragX) => {
+      console.log(`DragX (renderRight): ${JSON.stringify(dragX)}`);
+      const trans = dragX.interpolate({
+        inputRange: [-100, -50, 0],
+        outputRange: [0, 0, 40],
+      });
+      return (
+        <RectButton
+          onPress={() => hideChat}
+          style={{
+            backgroundColor: "lightgray",
+            width: 80,
+            padding: 0,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <MaterialIcons name="visibility-off" size={24} color="black" />
+          <Text style={{ fontSize: 16, marginTop: 4 }}>Hide</Text>
+        </RectButton>
+      );
+    }}
+  >
+    <CustomListItem id={id} chatName={chatName} enterChat={enterChat} />
+  </Swipeable>
+);
+
+export default SwipeableCustomListItem;

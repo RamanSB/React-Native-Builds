@@ -12,10 +12,20 @@ import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import { auth } from "../firebase";
 import { RootStackParamList } from "../types/types";
 import { DEFAULT_AVATAR_IMAGE_URL } from "../components/CustomListItem";
+import { db } from "../firebase";
+import {
+  CollectionReference,
+  DocumentReference,
+  addDoc,
+  collection,
+} from "firebase/firestore";
 
 type RegisterScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Register">;
 };
+
+const MY_PHOTO_URL: string =
+  "https://avatars.githubusercontent.com/u/13969478?v=4";
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const [fullName, setFullName] = useState("");
@@ -41,10 +51,19 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
       const userCredentials: UserCredential =
         await createUserWithEmailAndPassword(auth, email, password);
       const user: User = userCredentials.user;
-
+      const userId: string | null = user.uid;
       await updateProfile(user, {
         displayName: fullName,
         photoURL: imageURL || DEFAULT_AVATAR_IMAGE_URL,
+      });
+      const usersCollection: CollectionReference = await collection(
+        db,
+        "Users"
+      );
+      const documentRef: DocumentReference = await addDoc(usersCollection, {
+        id: userId,
+        email: email,
+        chats: [],
       });
     } catch (ex) {
       console.log(`Error while registering user: ${email}... ${ex}`);

@@ -1,5 +1,17 @@
 # Signal Clone
 
+#### Current State
+
+TODO:
+
+- Render Chats on HomeScreen based on Chats collection, however filter this to only display Chats that are visible based on the visibility
+  flag in the Users collection (there is a Document called chats containing an array of chats with each chat having a visibility flag).
+- Edit Profile Screen (Render list of chats that are hidden for given user...)
+  - Hide all will ensure all chats are visible.
+  - onPress will handle changing users displayName, photoURL, both or either one.
+- Add Camera Icon to Chat screen to send an image.
+- Resolve Swipe triggering the onPress on a `CustomListItem`
+
 ## About
 
 The purpose of this signal-clone was to develop my proficiency in React Native (I've only used React & NextJS prior to this).

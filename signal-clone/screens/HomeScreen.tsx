@@ -6,7 +6,7 @@ import {
   collection,
   onSnapshot,
 } from "firebase/firestore";
-import { Fragment, useEffect, useLayoutEffect, useState } from "react";
+import React, { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import CustomListItem, {
+import SwipeableCustomListItem, {
   DEFAULT_AVATAR_IMAGE_URL,
 } from "../components/CustomListItem";
 import { auth, db } from "../firebase";
@@ -26,6 +26,9 @@ type HomeScreenProps = {
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [chats, setChats] = useState<any[]>([]);
+  console.log(
+    `[HomeScreen] PhotoURL: ${auth.currentUser?.photoURL}\nAuth(Uid): ${auth.currentUser?.uid}`
+  );
   // console.log(`[HomeScreen] - Chats: ${JSON.stringify(chats)}`);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -82,7 +85,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </View>
       ),
     });
-  }, []);
+  }, [auth.currentUser?.photoURL]);
 
   useEffect(() => {
     const chatsCollectionRef: CollectionReference = collection(db, "Chats");
@@ -99,26 +102,30 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       }
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   const enterChat = (id: string, chatName: string) => {
     navigation.navigate("Chat", { id, chatName });
   };
 
+  const hideChat = (id: string, chatName: string) => {};
+
   return (
     <SafeAreaView style={styles.container}>
       <Divider width={1} />
+
       <ScrollView>
         {chats.map((chat) => {
           return (
             <Fragment key={chat.id}>
-              <CustomListItem
+              <SwipeableCustomListItem
+                hideChat={hideChat}
                 id={chat.id}
                 key={chat.id}
                 chatName={chat.chatName}
                 enterChat={enterChat}
-              />
+              ></SwipeableCustomListItem>
               <Divider width={1} />
             </Fragment>
           );

@@ -5,12 +5,19 @@
 TODO:
 
 - Render Chats on HomeScreen based on Chats collection, however filter this to only display Chats that are visible based on the visibility
-  flag in the Users collection (there is a Document called chats containing an array of chats with each chat having a visibility flag).
+  flag in the Users collection.
 - Edit Profile Screen (Render list of chats that are hidden for given user...)
   - Hide all will ensure all chats are visible.
   - onPress will handle changing users displayName, photoURL, both or either one.
 - Add Camera Icon to Chat screen to send an image.
 - Resolve Swipe triggering the onPress on a `CustomListItem`
+- Push Notifications (When App is closed and message is received show a notification)
+- ~~Track number of unread messages and show that as a counter by the chat.~~ No longer doing this as it requires several changes involving: Status, Last Seen, Detecting if the User is actively reading a Chat, etc...
+
+##### Naive DB Design Decisions to achieve above
+
+- Every Chat Created (id, chatName) will be added to the Users collection in a field called Chats with {id, chatName & **visibility**} (Used to hide chats for a given user and render the hidden chat list on Profile Settings page.)
+- The messages within a Chat could have a property stating isMultimedia, isImage...
 
 ## About
 
